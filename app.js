@@ -26,10 +26,12 @@ async function getCognitoSecrets() {
 
 let client_id;
 let client_secret;
+let session_secret;
 
 getCognitoSecrets().then((creds) => {
     client_id = creds.client_id;
     client_secret = creds.client_secret;
+    session_secret = creds.session_secret;
 });
 
 let client;
@@ -37,8 +39,8 @@ let client;
 async function initializeClient() {
     const issuer = await Issuer.discover(COGNITO_ISSUER_URL);
     client = new issuer.Client({
-        client_id: '',
-        client_secret: '',
+        client_id: client_id,
+        client_secret: client_secret,
         redirect_uris: [CALLBACK_URI],
         response_types: ['code']
     });
@@ -48,7 +50,7 @@ app.set('view engine', 'ejs');
 initializeClient().catch(console.error);
 
 app.use(session({
-    secret: '',
+    secret: session_secret,
     resave: false,
     saveUninitialized: false
 }));
