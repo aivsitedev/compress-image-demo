@@ -120,6 +120,6 @@ app.get('/logout', (req, res) => {
     res.redirect(logoutUrl);
 });
 
-app.listen(3000, () => {
+app.listen(3000, '0.0.0.0', () => {
     console.log(`Server is running`);
 });
