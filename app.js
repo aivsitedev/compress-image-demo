@@ -24,23 +24,17 @@ async function getCognitoSecrets() {
     return secret;
 }
 
-let client_id;
-let client_secret;
-let session_secret;
 
-getCognitoSecrets().then((creds) => {
-    client_id = creds.client_id;
-    client_secret = creds.client_secret;
-    session_secret = creds.session_secret;
-});
+let creds = await getCognitoSecrets();
+
+console.log(creds.client_id);
 
 let client;
-
 async function initializeClient() {
     const issuer = await Issuer.discover(COGNITO_ISSUER_URL);
     client = new issuer.Client({
-        client_id: client_id,
-        client_secret: client_secret,
+        client_id: creds.client_id,
+        client_secret: creds.client_secret,
         redirect_uris: [CALLBACK_URI],
         response_types: ['code']
     });
@@ -50,7 +44,7 @@ app.set('view engine', 'ejs');
 initializeClient().catch(console.error);
 
 app.use(session({
-    secret: session_secret,
+    secret: creds.session_secret,
     resave: false,
     saveUninitialized: false
 }));
@@ -135,3 +129,4 @@ app.listen(3000, '0.0.0.0', () => {
 // app.listen(port, '0.0.0.0', () => {
 //   console.log(`Example app listening on port ${port}`)
 // })
+
